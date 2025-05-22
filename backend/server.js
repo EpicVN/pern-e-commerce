@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import productRouter from "./routes/productRoutes.js";
 import { sql } from "./configs/db.js";
+import { aj } from "./lib/arcjet.js";
 
 dotenv.config();
 
@@ -17,6 +18,40 @@ app.use(cors());
 app.use(helmet()); // Set security HTTP headers
 app.use(morgan("dev")); // Log the requests
 
+// Apply Arcjet middleware
+app.use(async (req, res, next) => {
+  try {
+    const decision = await aj.protect(req, {
+      requested: 1,
+    });
+
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return res.status(429).json({ error: "Too Many Requests" });
+      } else if (decision.reason.isBot()) {
+        return res.status(403).json({ error: "Bot Access Denied" });
+      } else {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+    }
+
+    // Check for spoofed bots
+    if (
+      decision.results.some(
+        (result) => result.reason.isBot() && result.reason.isSpoofed()
+      )
+    ) {
+      return res.status(403).json({ error: "Spoofed Bot Access Denied" });
+    }
+
+    next();
+  } catch (error) {
+    console.log("Arcjet error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Routes
 app.use("/api/products", productRouter);
 
 async function initDB() {
