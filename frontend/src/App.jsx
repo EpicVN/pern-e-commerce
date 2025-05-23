@@ -10,7 +10,7 @@ function App() {
 
   return (
     <div
-      className="min-h-screen bg-base-100/90 transition-colors duration-300"
+      className="min-h-screen bg-base-100/80 transition-colors duration-300"
       data-theme={theme}
     >
       <NavBar />
