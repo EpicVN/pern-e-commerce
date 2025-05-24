@@ -10,6 +10,40 @@ export const useProductStore = create((set, get) => ({
   loading: false,
   error: null,
 
+  // Form state
+  formData: {
+    name: "",
+    price: "",
+    image: "",
+  },
+
+  setFormData: (formData) => set({ formData }),
+  resetFormData: () => set({ formData: { name: "", price: "", image: "" } }),
+
+  addProduct: async (e) => {
+    e.preventDefault();
+    set({ loading: true });
+
+    try {
+      const { formData } = get();
+      const response = await axios.post(`${BASE_URL}/api/products`, formData);
+
+      if (response.status === 201) {
+        await get().fetchProducts();
+        get().resetFormData();
+        toast.success("Product added successfully.");
+      }
+
+      // Close the modal
+      document.getElementById("add-product-modal").close();
+    } catch (error) {
+      console.log("Error in adding product:", error);
+      toast.error("Something went wrong.");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   fetchProducts: async () => {
     set({ loading: true });
     try {
@@ -35,7 +69,7 @@ export const useProductStore = create((set, get) => ({
           products: prev.products.filter((product) => product.id !== id),
         }));
       }
-      toast.success("Product deleted successfully.")
+      toast.success("Product deleted successfully.");
     } catch (error) {
       console.log("Error in deleting product:", error);
       toast.error("Something went wrong.");
