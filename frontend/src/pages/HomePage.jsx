@@ -11,14 +11,31 @@ const HomePage = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  const openModal = () => {
+    const modal = document.getElementById("add-product-modal");
+    if (modal) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
+
+      modal.showModal();
+
+      modal.addEventListener(
+        "close",
+        () => {
+          document.documentElement.style.paddingRight = "";
+        },
+        { once: true }
+      );
+    }
+  };
+
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <button
           className="btn btn-primary"
-          onClick={() =>
-            document.getElementById("add-product-modal").showModal()
-          }
+          onClick={openModal}
         >
           <PlusCircleIcon className="size-5 mr-2" />
           Add Product
