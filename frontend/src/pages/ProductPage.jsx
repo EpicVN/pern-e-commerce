@@ -104,6 +104,7 @@ const ProductPage = () => {
                 <input
                   type="number"
                   min={0}
+                  max={99999999.99}
                   step={0.01}
                   placeholder="0.00"
                   className="input input-bordered w-full"

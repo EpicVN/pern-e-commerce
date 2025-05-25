@@ -5,6 +5,12 @@ import { useProductStore } from "../stores/useProductStore";
 const ProductCard = ({ product }) => {
   const { deleteProduct } = useProductStore();
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      await deleteProduct(id);
+    }
+  };
+
   return (
     <div className="card bg-base-200/80 shadow-xl hover:shadow-2xl transition-shadow duration-300">
       {/* Product Image */}
@@ -35,7 +41,7 @@ const ProductCard = ({ product }) => {
 
           <button
             className="btn btn-sm btn-error btn-outline"
-            onClick={() => deleteProduct(product.id)}
+            onClick={() => handleDelete(product.id)}
           >
             <Trash2Icon className="size-4" />
           </button>

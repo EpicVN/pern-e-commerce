@@ -56,7 +56,7 @@ const AddProductModal = () => {
             <div className="form-control">
               <label className="label">
                 <span className="label-text text-base font-medium">
-                  Product Name
+                  Product Price
                 </span>
               </label>
 
@@ -68,6 +68,7 @@ const AddProductModal = () => {
                 <input
                   type="number"
                   min={0}
+                  max={99999999.99}
                   step={0.01}
                   placeholder="0.00"
                   className="input input-bordered w-full pl-10 py-3 focus:input-primary transition-colors duration-200"
@@ -83,7 +84,7 @@ const AddProductModal = () => {
             <div className="form-control">
               <label className="label">
                 <span className="label-text text-base font-medium">
-                  Product Name
+                  Product Image
                 </span>
               </label>
 

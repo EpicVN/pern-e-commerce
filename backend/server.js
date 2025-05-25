@@ -3,7 +3,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
-import productRouter from "./routes/productRoutes.js";
+import path from "path";
+
+import productRoutes from "./routes/productRoutes.js";
 import { sql } from "./configs/db.js";
 import { aj } from "./lib/arcjet.js";
 
@@ -11,11 +13,16 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const __dirname = path.resolve();
 
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use(helmet()); // Set security HTTP headers
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+); // Set security HTTP headers
 app.use(morgan("dev")); // Log the requests
 
 // Apply Arcjet middleware
@@ -52,7 +59,17 @@ app.use(async (req, res, next) => {
 });
 
 // Routes
-app.use("/api/products", productRouter);
+app.use("/api/products", productRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(__dirname, "frontend/dist");
+
+  app.use(express.static(frontendPath));
+
+  app.get("/{*any}", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
+}
 
 async function initDB() {
   try {
